@@ -28,7 +28,7 @@ spec:
       containers:
       - name: java
 
-        image: 075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:21
+        image: 075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:22
 
         imagePullPolicy: Always
 
