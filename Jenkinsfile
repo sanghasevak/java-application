@@ -3,8 +3,6 @@ pipeline {
     environment {
         DOCKER_IMAGE = '075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application'
         ECR_REGION   = 'us-east-1'
-        AWS_ACCESS_KEY_ID     = 'AKIARDBEIJT3UABPENFT'
-        AWS_SECRET_ACCESS_KEY = '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'   
     }
     stages {
         stage('Cloning') {
