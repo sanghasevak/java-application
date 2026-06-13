@@ -12,9 +12,6 @@ ENV APP_TYPE=JAVA
 ENV COMPANY_TYPE=IT
 ENV COMPANY_EMAIL=murtuza@cloudcontainer.in
 
-# Remove default ROOT application (optional)
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
-
 # Copy WAR file into Tomcat webapps directory
 COPY target/java-application-1.0.war /usr/local/tomcat/webapps/
 
