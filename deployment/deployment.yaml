@@ -28,7 +28,7 @@ spec:
       containers:
       - name: java
 
-        image:  image: ${DOCKER_IMAGE}:${BUILD_NUMBER}
+        image: ${DOCKER_IMAGE}:${BUILD_NUMBER}
 
         imagePullPolicy: Always
 
