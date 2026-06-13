@@ -48,7 +48,7 @@ pipeline {
                 script {
                     // Update image tag in deployment.yaml
                     sh """
-                        // sed -i "s|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g" deployment/deployment.yaml
+                        sed -i "s|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g" deployment/deployment.yaml
                         export DOCKER_IMAGE=${DOCKER_IMAGE}
                         export BUILD_NUMBER=${BUILD_NUMBER}
                         envsubst < deployment/deployment.yaml > deployment/deployment.yaml.new
