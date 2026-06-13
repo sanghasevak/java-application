@@ -33,14 +33,12 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
-                    script {
-                        sh """
-                            aws ecr get-login-password --region ${ECR_REGION} \
-                            | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
-                        """
-                        sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                    }
+                script {
+                    sh """
+                        aws ecr get-login-password --region ${ECR_REGION} \
+                        | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
+                    """
+                    sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                 }
             }
         }
@@ -48,15 +46,16 @@ pipeline {
         stage('Commit to Deploy') {
             steps {
                 script {
-                    // Update deployment.yaml using envsubst
+                    // Update image tag in deployment.yaml
                     sh """
+                        sed -i
                         export DOCKER_IMAGE=${DOCKER_IMAGE}
                         export BUILD_NUMBER=${BUILD_NUMBER}
                         envsubst < deployment/deployment.yaml > deployment/deployment.yaml.new
                         mv deployment/deployment.yaml.new deployment/deployment.yaml
                     """
 
-                    // Commit and push changes
+                    // Set Git credentials and push changes
                     withCredentials([usernamePassword(credentialsId: 'java_repo_creds', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         sh '''
                             git config user.email "sanghasevak03@gmail.com"
