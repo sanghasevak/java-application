@@ -69,7 +69,7 @@ pipeline {
 
                         sh """
                             git config user.email "sanghasevak@gmail.com"
-                            git config user.name "sanghasevam"
+                            git config user.name "sanghasevak"
 
                             git add deployment/deployment.yaml
                             git commit -m "Update image tag to ${BUILD_NUMBER}" || echo "No changes to commit"
