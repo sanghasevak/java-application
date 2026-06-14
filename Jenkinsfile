@@ -15,7 +15,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'java_repo_creds',
-                    url: 'https://github.com/faizankitty4554-oss/java-application.git'
+                    url: 'https://github.com/sanghasevak/java-application.git'
             }
         }
 
