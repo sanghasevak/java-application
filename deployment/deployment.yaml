@@ -4,37 +4,46 @@ metadata:
   name: java-app-deployment
   labels:
     app: java
+
 spec:
   replicas: 6
   minReadySeconds: 10
+
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 2
       maxUnavailable: 0
+
   selector:
     matchLabels:
       app: java
+
   template:
     metadata:
       labels:
         app: java
+
     spec:
       containers:
-        - name: java
-          image: 075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:3
-          ports:
-            - containerPort: 8080
+      - name: java
+        image: 075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:15
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: java-app-service
 spec:
+  type: LoadBalancer
   selector:
     app: java
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: LoadBalancer
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8080
