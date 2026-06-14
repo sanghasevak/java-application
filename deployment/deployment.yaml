@@ -1,40 +1,84 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
-  name: java-app-deployment
-  labels:
-    app: java
+name: java-app-deployment
+labels:
+app: java
+
 spec:
-  replicas: 6
-  minReadySeconds: 10
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 2
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: java
-  template:
-    metadata:
-      labels:
-        app: java
-    spec:
-      containers:
-        - name: java
-          image: 075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:9
-          ports:
-            - containerPort: 8080
+replicas: 6
+
+revisionHistoryLimit: 10
+
+minReadySeconds: 10
+
+strategy:
+type: RollingUpdate
+rollingUpdate:
+maxSurge: 2
+maxUnavailable: 0
+
+selector:
+matchLabels:
+app: java
+
+template:
+metadata:
+labels:
+app: java
+
+```
+spec:
+  containers:
+  - name: java
+
+    image: 075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:1
+
+    imagePullPolicy: Always
+
+    ports:
+    - containerPort: 8080
+
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 20
+      periodSeconds: 10
+
+    livenessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 15
+
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+```
+
 ---
+
 apiVersion: v1
 kind: Service
+
 metadata:
-  name: java-app-service
+name: java-app-service
+
 spec:
-  selector:
-    app: java
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: LoadBalancer
+type: LoadBalancer
+
+selector:
+app: java
+
+ports:
+
+* name: http
+  protocol: TCP
+  port: 80
+  targetPort: 8080
