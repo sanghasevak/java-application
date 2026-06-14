@@ -5,7 +5,7 @@ FROM tomcat:9.0-jdk17
 MAINTAINER "CloudContainer Technologies Private Limited"
 
 LABEL description="Custom Docker image for Java Application"
-LABEL author="Murtuza Ansari"
+LABEL author="Sanghasevak Gedam"
 LABEL email="sanghasevak@gmail.com"
 
 # Environment Variables
