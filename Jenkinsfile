@@ -49,7 +49,6 @@ pipeline {
         stage('Commit to Deploy') {
             steps {
                 script {
-
                     sh """
                         sed -i 's|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' deployment/deployment.yaml
                     """
@@ -58,7 +57,6 @@ pipeline {
                         usernamePassword(
                             credentialsId: 'java_repo_creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')])
                     {
-
                         sh """
                             git config user.email "sanghasevak@gmail.com"
                             git config user.name "sanghasevak"
@@ -74,7 +72,8 @@ pipeline {
                 }
             }
         }
-        // Naya deploy aur rollback stages yahan add kiye gaye
+
+        // 👇 Naya deploy aur rollback stages yahan add kiye gaye
         stage('Deploy to Kubernetes') {
             steps {
                 script {
