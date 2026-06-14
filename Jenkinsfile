@@ -74,5 +74,24 @@ pipeline {
                 }
             }
         }
+        // Naya deploy aur rollback stages yahan add kiye gaye
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh """
+                        kubectl set image deployment/java-app-deployment java=${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        kubectl rollout status deployment/java-app-deployment
+                    """
+                }
+            }
+        }
+
+        stage('Rollback on Failure') {
+            steps {
+                script {
+                    sh "kubectl rollout undo deployment/java-app-deployment"
+                }
+            }
+        }
     }
 }
