@@ -15,7 +15,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'java_repo_creds',
-                    url: 'gh repo clone sanghasevak/java-application'
+                    url: 'https://github.com/sanghasevak/java-application.git'
             }
         }
 
@@ -74,7 +74,7 @@ pipeline {
                             git add deployment/deployment.yaml
                             git commit -m "Update image tag to ${BUILD_NUMBER}" || echo "No changes to commit"
 
-                            git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@gh repo clone sanghasevak/java-application
+                            git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/sanghasevak/java-application.git
 
                             git push origin main
                         """
