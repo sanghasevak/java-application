@@ -40,7 +40,7 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 script {
-                sh "aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE}"
+                sh "aws ecr get-login-password --region ${ECR_REGION} \ | docker login --username AWS --password-stdin ${DOCKER_IMAGE}"
                 sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                 }
             }
