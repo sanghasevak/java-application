@@ -70,4 +70,16 @@ pipeline {
             }
         }
     }
+        // 👇 Rollback stage yahan add karo
+        stage('Rollback Deployment') {
+            steps {
+                script {
+                    // ArgoCD rollback command
+                    sh """
+                        argocd app rollback java-app 1
+                    """
+                }
+            }
+        }
+    }
 }
