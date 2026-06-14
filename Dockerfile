@@ -4,7 +4,7 @@ FROM tomcat:9.0-jdk17
 # Metadata
 MAINTAINER "CloudContainer Technologies Private Limited"
 
-LABEL description="Custom Docker image for Java Application"
+LABEL description="This Dockerfile create custom docker image""
 LABEL author="Sanghasevak Gedam"
 LABEL email="sanghasevak@gmail.com"
 
