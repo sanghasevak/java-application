@@ -78,8 +78,15 @@ pipeline {
             steps {
                 script {
                     sh """
+                        # Step 1: Authenticate
+                        aws eks update-kubeconfig --region us-east-1 --name java-app-cluster
+                        # Step 2: Verify access
+                        kubectl get nodes
+                        # Step 3: Update image
                         kubectl set image deployment/java-app-deployment java=075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:9
+                        # Step 4: Rollout status
                         kubectl rollout status deployment/java-app-deployment
+                       
                     """
                 }
             }
