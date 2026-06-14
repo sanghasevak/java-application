@@ -1,15 +1,21 @@
 pipeline {
     agent any
+
     environment {
         DOCKER_IMAGE = '075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application'
-        ECR_REGION   = 'us-east-1'
+        ECR_REGION = 'us-east-1'
+
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     }
+
     stages {
+
         stage('Cloning') {
             steps {
-                git branch: 'main', credentialsId: 'java_repo_creds', url: 'https://github.com/sanghasevak/java-application.git'
+                git branch: 'main',
+                    credentialsId: 'java_repo_creds',
+                    url: 'gh repo clone sanghasevak/java-application'
             }
         }
 
@@ -33,39 +39,44 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                script {
-                    sh """
-                        aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-                        aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-                        aws configure set region ${ECR_REGION}
+                sh """
+                    aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                    aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                    aws configure set region ${ECR_REGION}
 
-                        aws ecr get-login-password --region ${ECR_REGION} \
-                        | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
-                    """
-                    sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
-                }
+                    aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin 075237969143.dkr.ecr.us-east-1.amazonaws.com
+                    docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                """
             }
         }
 
         stage('Commit to Deploy') {
             steps {
                 script {
-                    // Update image tag in deployment.yaml
+
                     sh """
-                        sed -i "s|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g" deployment/deployment.yaml
-                        
+                        sed -i 's|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' deployment/deployment.yaml
                     """
 
-                    // Set Git credentials and push changes
-                    withCredentials([usernamePassword(credentialsId: 'java_repo_creds', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        sh '''
-                            git config user.email "sanghasevak03@gmail.com"
-                            git config user.name "sanghasevak"
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'java_repo_creds',
+                            usernameVariable: 'GIT_USERNAME',
+                            passwordVariable: 'GIT_PASSWORD'
+                        )
+                    ]) {
+
+                        sh """
+                            git config user.email "sanghasevak@gmail.com"
+                            git config user.name "sanghasevam"
+
                             git add deployment/deployment.yaml
                             git commit -m "Update image tag to ${BUILD_NUMBER}" || echo "No changes to commit"
-                            git remote set-url origin https://$GIT_USERNAME:$GIT_PASSWORD@github.com/sanghasevak/java-application.git
+
+                            git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@gh repo clone sanghasevak/java-application
+
                             git push origin main
-                        '''
+                        """
                     }
                 }
             }
