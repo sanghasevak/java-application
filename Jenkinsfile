@@ -44,7 +44,8 @@ pipeline {
                     aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
                     aws configure set region ${ECR_REGION}
 
-                    aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin 075237969143.dkr.ecr.us-east-1.amazonaws.com
+                    aws ecr get-login-password --region ${ECR_REGION} \
+                        | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
                     docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
                 """
             }
