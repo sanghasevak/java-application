@@ -40,12 +40,7 @@ pipeline {
         stage('Push to ECR') {
             steps {
                 sh """
-                    aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-                    aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-                    aws configure set region ${ECR_REGION}
-
                     aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin 075237969143.dkr.ecr.us-east-1.amazonaws.com
-
                     docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
                 """
             }
@@ -61,11 +56,8 @@ pipeline {
 
                     withCredentials([
                         usernamePassword(
-                            credentialsId: 'java_repo_creds',
-                            usernameVariable: 'GIT_USERNAME',
-                            passwordVariable: 'GIT_PASSWORD'
-                        )
-                    ]) {
+                            credentialsId: 'java_repo_creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')])
+                    {
 
                         sh """
                             git config user.email "sanghasevak@gmail.com"
