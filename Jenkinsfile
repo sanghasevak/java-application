@@ -41,12 +41,12 @@ pipeline {
             steps {
                 script {
                     
-                sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                sh """aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
                     aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
                     aws configure set region ${ECR_REGION}
                     
                     aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE}"
-                sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                    docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"""
                 }
             }
         }
