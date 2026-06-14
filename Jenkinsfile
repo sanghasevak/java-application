@@ -3,8 +3,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = '075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application'
         ECR_REGION   = 'us-east-1'
-        AWS_ACCESS_KEY_ID     = 'AKIARDBEIJT3UABPENFT'
-        AWS_SECRET_ACCESS_KEY = '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'
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     }
     stages {
         stage('Cloning') {
@@ -33,12 +33,14 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                script {
-                    sh """
-                        aws ecr get-login-password --region ${ECR_REGION} \
-                        | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
-                    """
-                    sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    script {
+                        sh """
+                            aws ecr get-login-password --region ${ECR_REGION} \
+                            | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
+                        """
+                        sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                    }
                 }
             }
         }
@@ -46,16 +48,16 @@ pipeline {
         stage('Commit to Deploy') {
             steps {
                 script {
-                    // Update image tag in deployment.yaml
+                    // Update deployment.yaml using envsubst
                     sh """
-                        sed -i "s|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g" deployment/deployment.yaml
+                        sed -i 's|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' deployment/deployment.yaml
                         export DOCKER_IMAGE=${DOCKER_IMAGE}
                         export BUILD_NUMBER=${BUILD_NUMBER}
                         envsubst < deployment/deployment.yaml > deployment/deployment.yaml.new
                         mv deployment/deployment.yaml.new deployment/deployment.yaml
                     """
 
-                    // Set Git credentials and push changes
+                    // Commit and push changes
                     withCredentials([usernamePassword(credentialsId: 'java_repo_creds', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         sh '''
                             git config user.email "sanghasevak03@gmail.com"
