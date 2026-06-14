@@ -78,7 +78,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        kubectl set image deployment/java-app-deployment java=${DOCKER_IMAGE}:${BUILD_NUMBER}
+                        kubectl set image deployment/java-app-deployment java=075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:9
                         kubectl rollout status deployment/java-app-deployment
                     """
                 }
