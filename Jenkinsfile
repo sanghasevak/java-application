@@ -39,15 +39,10 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                sh """
-                    aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-                    aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-                    aws configure set region ${ECR_REGION}
-
-                    aws ecr get-login-password --region ${ECR_REGION} \
-                        | docker login --username AWS --password-stdin ${DOCKER_IMAGE}
-                    docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
-                """
+                script {
+                sh "aws ecr get-login-password --region ${ECR_REGION} | docker login --username AWS --password-stdin ${DOCKER_IMAGE}"
+                sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                }
             }
         }
 
@@ -55,9 +50,9 @@ pipeline {
             steps {
                 script {
 
-                    sh """
+                    sh "
                         sed -i 's|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g' deployment/deployment.yaml
-                    """
+                    "
 
                     withCredentials([
                         usernamePassword(
@@ -67,7 +62,7 @@ pipeline {
                         )
                     ]) {
 
-                        sh """
+                        sh '''
                             git config user.email "sanghasevak03@gmail.com"
                             git config user.name "sanghasevak"
 
@@ -76,8 +71,9 @@ pipeline {
 
                             git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/sanghasevak/java-application.git
 
-                            git push origin main
-                        """
+                            git push --set-upstream origin main
+                            git push
+                        '''
                     }
                 }
             }
