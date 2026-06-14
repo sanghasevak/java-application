@@ -3,8 +3,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = '075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application'
         ECR_REGION   = 'us-east-1'
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')'
+        AWS_ACCESS_KEY_ID     = 'AKIARDBEIJT3UABPENFT'
+        AWS_SECRET_ACCESS_KEY = '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'
     }
     stages {
         stage('Cloning') {
@@ -49,7 +49,10 @@ pipeline {
                     // Update image tag in deployment.yaml
                     sh """
                         sed -i "s|075237969143.dkr.ecr.us-east-1.amazonaws.com/java-application:[0-9]*|${DOCKER_IMAGE}:${BUILD_NUMBER}|g" deployment/deployment.yaml
-                        
+                        export DOCKER_IMAGE=${DOCKER_IMAGE}
+                        export BUILD_NUMBER=${BUILD_NUMBER}
+                        envsubst < deployment/deployment.yaml > deployment/deployment.yaml.new
+                        mv deployment/deployment.yaml.new deployment/deployment.yaml
                     """
 
                     // Set Git credentials and push changes
