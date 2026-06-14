@@ -68,7 +68,7 @@ pipeline {
                     ]) {
 
                         sh """
-                            git config user.email "sanghasevak@gmail.com"
+                            git config user.email "sanghasevak03@gmail.com"
                             git config user.name "sanghasevak"
 
                             git add deployment/deployment.yaml
